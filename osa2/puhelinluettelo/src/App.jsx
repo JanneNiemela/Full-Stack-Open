@@ -16,6 +16,9 @@ const App = () => {
       .then(serverPersons => {
         setPersons(serverPersons)
       })
+      .catch(error => {
+        console.log(error.message)
+      })
   }, [])
 
   const filteredPersons = filter.length === 0 ? persons : persons.filter(person => person.name.toLowerCase().includes(filter.toLowerCase()))
@@ -26,24 +29,44 @@ const App = () => {
     if (newName.length === 0) {
       alert("a name must contain at least one character")
       return
-    }
-    else if (persons.find(p => p.name === newName)) {
-      alert(`${newName} is already added to phonebook`)
-      return
-    }
+    } 
 
-    const person = {
-      name: newName,
-      phoneNumber: newPhoneNumber
-    }
+    const existingPerson = persons.find(p => p.name === newName)
+    
+    if (existingPerson) {
+      if (!confirm(`${newName} is already in the phonebook. Replace the phone number with a new one?`)) {
+        return
+      }
 
-    personService
-      .create(person)
-      .then(serverPerson => {
-        setPersons(persons.concat(serverPerson))
-        setNewName('')
-        setNewPhoneNumber('')
-      })
+      existingPerson.phoneNumber = newPhoneNumber
+      personService
+        .put(existingPerson)
+        .then(serverPerson => {
+          setPersons(persons.map(p => p.id === serverPerson.id ? serverPerson : p))
+          setNewName('')
+          setNewPhoneNumber('')
+        })
+        .catch(error => {
+          console.log(error.message)
+        })
+    } 
+    else {
+      const person = {
+        name: newName,
+        phoneNumber: newPhoneNumber
+      }
+
+      personService
+        .create(person)
+        .then(serverPerson => {
+          setPersons(persons.concat(serverPerson))
+          setNewName('')
+          setNewPhoneNumber('')
+        })
+        .catch(error => {
+          console.log(error.message)
+        })
+    }
   }
 
   const handleNameChange = (event) => {
