@@ -58,6 +58,26 @@ const App = () => {
     setFilter(event.target.value)
   }
 
+  const deletePerson = (id) => {
+    const index = persons.findIndex(person => person.id === id)
+    if (index === -1) {
+      console.log(`Unable to find a person with the id ${id}`)
+      return
+    }
+    else if (!confirm(`Are you sure you want to delete ${persons[index].name}?`)) {
+      return
+    }
+  
+    personService
+      .del(id)
+      .then(() => {
+        setPersons(persons.toSpliced(index, 1))
+      })
+      .catch(error => {
+        console.log(error.message)
+      })
+  }
+
   return (
     <div>
       <h2>Phonebook</h2>    
@@ -65,7 +85,7 @@ const App = () => {
       <h2>Add a new</h2>
       <PersonForm addPerson={addPerson} newName={newName} handleNameChange={handleNameChange} newPhoneNumber={newPhoneNumber} handlePhoneNumberChange={handlePhoneNumberChange} />
       <h2>Numbers</h2>
-      <Persons filteredPersons={filteredPersons} />
+      <Persons filteredPersons={filteredPersons} handleDeletion={deletePerson} />
     </div>
   )
 }
