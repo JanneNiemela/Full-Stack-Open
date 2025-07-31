@@ -93,8 +93,8 @@ const App = () => {
   
     personService
       .del(id)
-      .then(() => {
-        setPersons(persons.toSpliced(index, 1))
+      .then((deletedPerson) => {
+        setPersons(persons.toSpliced(persons.findIndex(person => person.id === deletedPerson.id), 1))
       })
       .catch(error => {
         console.log(error.message)
