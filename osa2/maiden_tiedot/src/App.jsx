@@ -1,11 +1,13 @@
 import { useState, useEffect } from 'react'
 import axios from 'axios'
 import Countries from './components/Countries'
+const api_key = import.meta.env.VITE_WEATHER_KEY
 
 function App() {
   const [filter, setFilter] = useState('')
   const [countries, setCountries] = useState([])
   const [selectedCountry, setSelectedCountry] = useState(null)
+  const [weather, setWeather] = useState(null)
 
   useEffect(() => {
     axios
@@ -17,6 +19,22 @@ function App() {
         console.log(error.message)
       })
   }, [])
+
+  useEffect(() => {
+    if (!selectedCountry) {
+      setWeather(null)
+      return
+    }
+    const place = `${selectedCountry.capital},${selectedCountry.cca2}`    
+    axios
+      .get(`https://api.openweathermap.org/data/2.5/weather?q=${place}&APPID=${api_key}&units=metric`)
+      .then(response => {
+        setWeather(response.data)
+      })
+      .catch(error => {        
+        console.log(error.message)
+      })
+  }, [selectedCountry])
 
   const filteredCountries = filter.length === 0 ? countries : countries.filter(country => country.name.common.toLowerCase().includes(filter.toLowerCase()))
 
@@ -38,7 +56,7 @@ function App() {
       <form>
         Find countries: <input value={filter} onChange={handleFilterChange} />        
       </form>
-      <Countries filteredCountries={filteredCountries} handleShowInfo={handleShowInfo} selectedCountry={selectedCountry}></Countries>
+      <Countries filteredCountries={filteredCountries} handleShowInfo={handleShowInfo} selectedCountry={selectedCountry} weather={weather}></Countries>
     </div>
   )
 }
