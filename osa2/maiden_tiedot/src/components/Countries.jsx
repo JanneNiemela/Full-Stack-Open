@@ -1,4 +1,4 @@
-const Country = ({country, showFullInfo}) => {
+const Country = ({country, showFullInfo, handleShowInfo}) => {
   if (showFullInfo) {
     const languages = Object.values(country.languages).map((v, k) => <li key={k}>{v}</li>)
     return (
@@ -16,24 +16,31 @@ const Country = ({country, showFullInfo}) => {
   return (
     <div 
       key={country.name.common}>{country.name.common} 
+      <button onClick={()=>handleShowInfo(country)}>Show</button>
     </div>
   )
 }
 
-const Countries = ({filteredCountries}) => {
+const Countries = ({filteredCountries, handleShowInfo, selectedCountry}) => {
   if (filteredCountries.length > 10) {
     return (
       <p>Too many matches, please specify another filter.</p>
     )
   }
-
-  return (
-    <>
-      {filteredCountries.map(country => 
-        <Country key={country.name.common} country={country} showFullInfo={filteredCountries.length === 1}/>
-      )} 
-    </>
-  )
+  else if (selectedCountry) {
+    return (    
+      <Country key={selectedCountry.name.common} country={selectedCountry} showFullInfo={true} handleShowInfo={handleShowInfo}/>
+    )
+  }
+  else {
+    return (
+      <>
+        {filteredCountries.map(country => 
+          <Country key={country.name.common} country={country} showFullInfo={false} handleShowInfo={handleShowInfo}/>
+        )} 
+      </>
+    )
+  }
 }
 
 export default Countries

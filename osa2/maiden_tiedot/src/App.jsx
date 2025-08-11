@@ -5,6 +5,7 @@ import Countries from './components/Countries'
 function App() {
   const [filter, setFilter] = useState('')
   const [countries, setCountries] = useState([])
+  const [selectedCountry, setSelectedCountry] = useState(null)
 
   useEffect(() => {
     axios
@@ -19,8 +20,17 @@ function App() {
 
   const filteredCountries = filter.length === 0 ? countries : countries.filter(country => country.name.common.toLowerCase().includes(filter.toLowerCase()))
 
+  if (filteredCountries.length === 1 && (!selectedCountry || (selectedCountry && selectedCountry.name.common !== filteredCountries[0].name.common))) {
+    setSelectedCountry(filteredCountries[0])
+  }
+
   const handleFilterChange = (event) => {
     setFilter(event.target.value)
+    setSelectedCountry(null)
+  }
+
+  const handleShowInfo = (country) => {
+    setSelectedCountry(country)
   }
 
   return (
@@ -28,7 +38,7 @@ function App() {
       <form>
         Find countries: <input value={filter} onChange={handleFilterChange} />        
       </form>
-      <Countries filteredCountries={filteredCountries}></Countries>
+      <Countries filteredCountries={filteredCountries} handleShowInfo={handleShowInfo} selectedCountry={selectedCountry}></Countries>
     </div>
   )
 }
