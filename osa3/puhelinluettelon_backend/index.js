@@ -1,9 +1,12 @@
 const express = require('express')
 const app = express()
-var morgan = require('morgan')
+const morgan = require('morgan')
 
 app.use(express.json())
-app.use(morgan('tiny'))
+
+app.use(morgan('tiny'));
+morgan.token('postReqBodyJson', (req) => JSON.stringify(req.body))
+app.use(morgan(':postReqBodyJson', { skip: (req) => req.method !== 'POST' }))
 
 let persons = [
   {
