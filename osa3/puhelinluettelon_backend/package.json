@@ -5,13 +5,14 @@
   "scripts": {
     "start": "node index.js",
     "dev": "node --watch index.js",
-    "test": "echo \\\"Error: no test specified\\\" && exit 1"
+    "test": "echo \\\"Error: no test specified\\\" && exit 1",
+    "build:ui": "@powershell Remove-Item -Recurse -Force dist && cd ../puhelinluettelon_frontend && npm run build && @powershell Copy-Item dist -Recurse ../puhelinluettelon_backend",
+    "deploy:full": "npm run build:ui && git add . && git commit -m uibuild && git push"
   },
   "author": "Janne Niemelä",
   "license": "MIT",
   "description": "",
   "dependencies": {
-    "cors": "^2.8.5",
     "express": "^5.1.0",
     "morgan": "^1.10.1"
   }
