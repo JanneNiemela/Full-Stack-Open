@@ -6,19 +6,14 @@ const morgan = require('morgan')
 
 app.use(express.json())
 app.use(express.static('dist'))
-app.use(morgan('tiny'));
+app.use(morgan('tiny'))
 morgan.token('postReqBodyJson', (req) => JSON.stringify(req.body))
 app.use(morgan(':postReqBodyJson', { skip: (req) => req.method !== 'POST' }))
-
-const generateRandomId = () => {
-  return String(Math.floor(Math.random() * Number.MAX_SAFE_INTEGER))
-}
 
 app.get('/info', (request, response, next) => {
   Person.collection.countDocuments()
     .then((count) => {
-      response.send
-      (`
+      response.send(`
         <p>Phonebook has info for ${count} people.</p>
         <p>${new Date().toLocaleString()}</p>
       `)
@@ -48,7 +43,7 @@ app.get('/api/persons/:id', (request, response, next) => {
 
 app.delete('/api/persons/:id', (request, response, next) => {
   Person.findByIdAndDelete(request.params.id)
-    .then(result => {
+    .then(() => {
       response.status(204).end()
     })
     .catch(error => next(error))

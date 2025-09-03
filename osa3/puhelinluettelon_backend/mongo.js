@@ -24,8 +24,8 @@ const processArgs = () => {
   if (process.argv.length >= 5) {
     addPerson(process.argv[3], process.argv[4])
   }
-  else if (process.argv.length == 4) {
-    addPerson(process.argv[3], "")
+  else if (process.argv.length === 4) {
+    addPerson(process.argv[3])
   }
   else {
     printPersons()
@@ -38,21 +38,21 @@ const addPerson = (name, number) => {
     number: number,
   })
 
-  person.save().then(result => {
+  person.save().then(() => {
     console.log('Person saved.')
     mongoose.connection.close()
   })
 }
 
 const printPersons = () => {
-  console.log("Phonebook:")
+  console.log('Phonebook:')
   Person.find({})
-  .then(result => {
-    result.forEach(person => {
-      console.log(person)
+    .then(result => {
+      result.forEach(person => {
+        console.log(person)
+      })
+      mongoose.connection.close()
     })
-    mongoose.connection.close()
-  })
 }
 
 processArgs()
