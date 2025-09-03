@@ -56,17 +56,6 @@ app.delete('/api/persons/:id', (request, response, next) => {
 
 app.post('/api/persons', (request, response, next) => {
   const body = request.body
-  
-  if (!body.name || body.name.length === 0) {
-    return response.status(400).json({
-      error: `The person's name is missing. Please input a name that is at least one character in length.`
-    })
-  }
-  else if (!body.number || body.number.length === 0) {
-    return response.status(400).json({
-      error: `The person's number is missing. Please input a name number is at least one character in length.`
-    })
-  }
 
   const person = new Person({
     name: body.name,
@@ -106,6 +95,8 @@ const errorHandler = (error, request, response, next) => {
 
   if (error.name === 'CastError') {
     return response.status(400).send({ error: 'Malformatted id' })
+  } else if (error.name === 'ValidationError') {
+    return response.status(400).json({ error: error.message })
   }
 
   next(error)

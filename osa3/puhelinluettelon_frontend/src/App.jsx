@@ -38,11 +38,6 @@ const App = () => {
   const addPerson = (event) => {
     event.preventDefault()
 
-    if (newName.length === 0) {
-      displayNotification("A name must contain at least one character.", 3000, true)
-      return
-    } 
-
     const existingPerson = persons.find(p => p.name === newName)
     
     if (existingPerson) {
@@ -60,8 +55,9 @@ const App = () => {
           displayNotification(`Changed ${serverPerson.name}'s phone number to ${serverPerson.number}.`, 3000, false)
         })
         .catch(error => {
-          displayNotification(`${existingPerson.name}'s information has been deleted from the server.`, 3000, true)          
-          console.log(error.message)          
+          console.log(error.response.data)
+          displayNotification(error.response.data.error, 3000, true)
+
           const index = persons.findIndex(person => person.id === existingPerson.id)
           if (index !== -1) {
             setPersons(persons.toSpliced(index, 1))
@@ -83,8 +79,8 @@ const App = () => {
           displayNotification(`Added ${serverPerson.name}.`, 3000, false)
         })
         .catch(error => {
-          displayNotification(`Failed to add a new user.`, 3000, true)
-          console.log(error.message)
+          console.log(error.response.data)
+          displayNotification(error.response.data.error, 3000, true)
         })
     }
   }
