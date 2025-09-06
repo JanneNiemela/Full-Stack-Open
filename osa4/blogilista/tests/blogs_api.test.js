@@ -33,6 +33,27 @@ test('all blogs have id as their identifying property instead of _id', async () 
   }
 })
 
+test('posting a new blog with correct content works', async () => {
+  const newBlog = {
+    title: 'New Blog',
+    author: 'New Author',
+    url: 'https://newblogsomeurl.com/',
+    likes: 10
+  }
+
+  await api
+    .post('/api/blogs')
+    .send(newBlog)
+    .expect(201)
+    .expect('Content-Type', /application\/json/)
+
+  const blogs = await helper.blogsInDb()
+  assert.strictEqual(blogs.length, helper.initialBlogs.length + 1)
+  assert(blogs.map((blog) => blog.title).includes('New Blog'))
+  assert(blogs.map((blog) => blog.author).includes('New Author'))
+  assert(blogs.map((blog) => blog.url).includes('https://newblogsomeurl.com/'))
+})
+
 after(async () => {
   await mongoose.connection.close()
 })
