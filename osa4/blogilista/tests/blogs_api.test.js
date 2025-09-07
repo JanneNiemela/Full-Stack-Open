@@ -65,7 +65,7 @@ describe('when there are blogs saved', () => {
       assert.strictEqual(addedBlogs.length, 0)
     })
 
-    test('a new blog with correct content with or without likes works', async () => {
+    test('a new blog with correct content', async () => {
       const correctBlog = {
         title: 'New Blog',
         author: 'New Author',
@@ -83,9 +83,9 @@ describe('when there are blogs saved', () => {
       assert.strictEqual(blogs.length, helper.initialBlogs.length + 1)
       const addedCorrectBlogs = await helper.findWithTitleFromDb('New Blog')
       assert.strictEqual(addedCorrectBlogs.length, 1)
+    })
 
-      // A test for blogs without likes is also included here, because if it is separated into another test,
-      // the blog doesn't seem to be added to the test database for some reason.
+    test('a new blog without likes sets the likes count to zero', async () => {
       const blogWithoutLikes = {
         title: 'New Blog Without Likes',
         author: 'New Author Without Likes',
@@ -102,7 +102,7 @@ describe('when there are blogs saved', () => {
       assert.strictEqual(addedBlogsWithoutLikes.length, 1)
       assert.strictEqual(addedBlogsWithoutLikes[0].likes, 0)
       const blogsAtTheEnd = await helper.blogsInDb()
-      assert.strictEqual(blogsAtTheEnd.length, helper.initialBlogs.length + 2)
+      assert.strictEqual(blogsAtTheEnd.length, helper.initialBlogs.length + 1)
     })
   })
 
