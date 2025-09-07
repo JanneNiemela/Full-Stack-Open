@@ -56,7 +56,13 @@ const blogsInDb = async () => {
   return blogs.map((blog) => blog.toJSON())
 }
 
+const findWithTitleFromDb = async (title) => {
+  const blogs = await Blog.find({ title })
+  return blogs.map((blog) => blog.toJSON())
+}
+
 module.exports = {
   initialBlogs,
   blogsInDb,
+  findWithTitleFromDb
 }
