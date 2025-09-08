@@ -8,7 +8,18 @@ usersRouter.get('/', async (request, response) => {
 })
 
 usersRouter.post('/', async (request, response) => {
-  const { username, name, password } = request.body
+  let { username, name, password } = request.body
+
+  if (!password) {
+    return response.status(400).json({ error: 'Password is missing.' })
+  } else if (!username) {
+    return response.status(400).json({ error: 'Username is missing.' })
+  } else if (password.length < 3) {
+    return response.status(400).json({ error: 'Password is too short. It must be at least three characters long.' })
+  } else if (username.length < 3) {
+    return response.status(400).json({ error: 'Username is too short. It must be at least three characters long.' })
+  }
+
   const passwordHash = await bcrypt.hash(password, 10)
 
   const user = new User({
