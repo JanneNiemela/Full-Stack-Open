@@ -58,7 +58,7 @@ const blogsInDb = async () => {
 }
 
 const findBlogWithTitleFromDb = async (title) => {
-  const blogs = await Blog.find({ title })
+  const blogs = await Blog.find({ title: title })
   return blogs.map((blog) => blog.toJSON())
 }
 
