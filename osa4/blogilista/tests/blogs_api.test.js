@@ -3,7 +3,7 @@ const { test, after, beforeEach, describe } = require('node:test')
 const mongoose = require('mongoose')
 const supertest = require('supertest')
 const app = require('../app')
-const helper = require('./blogs_api_test_helper')
+const helper = require('./test_helper')
 const Blog = require('../models/blog')
 
 const api = supertest(app)
@@ -46,7 +46,7 @@ describe('when there are blogs saved', () => {
         .send(newBlog)
         .expect(400)
 
-      const addedBlogs = await helper.findWithTitleFromDb('New Author Without A Title')
+      const addedBlogs = await helper.findBlogWithTitleFromDb('New Author Without A Title')
       assert.strictEqual(addedBlogs.length, 0)
     })
 
@@ -61,7 +61,7 @@ describe('when there are blogs saved', () => {
         .send(newBlog)
         .expect(400)
 
-      const addedBlogs = await helper.findWithTitleFromDb('New Blog Without URL')
+      const addedBlogs = await helper.findBlogWithTitleFromDb('New Blog Without URL')
       assert.strictEqual(addedBlogs.length, 0)
     })
 
@@ -81,7 +81,7 @@ describe('when there are blogs saved', () => {
 
       const blogs = await helper.blogsInDb()
       assert.strictEqual(blogs.length, helper.initialBlogs.length + 1)
-      const addedCorrectBlogs = await helper.findWithTitleFromDb('New Blog')
+      const addedCorrectBlogs = await helper.findBlogWithTitleFromDb('New Blog')
       assert.strictEqual(addedCorrectBlogs.length, 1)
     })
 
@@ -98,7 +98,7 @@ describe('when there are blogs saved', () => {
         .expect(201)
         .expect('Content-Type', /application\/json/)
 
-      const addedBlogsWithoutLikes = await helper.findWithTitleFromDb('New Blog Without Likes')
+      const addedBlogsWithoutLikes = await helper.findBlogWithTitleFromDb('New Blog Without Likes')
       assert.strictEqual(addedBlogsWithoutLikes.length, 1)
       assert.strictEqual(addedBlogsWithoutLikes[0].likes, 0)
       const blogsAtTheEnd = await helper.blogsInDb()
@@ -122,7 +122,7 @@ describe('when there are blogs saved', () => {
         .delete(`/api/blogs/${deletedBlog.id}`)
         .expect(204)
 
-      const blogsWithDeletedTitle = await helper.findWithTitleFromDb(deletedBlog.title)
+      const blogsWithDeletedTitle = await helper.findBlogWithTitleFromDb(deletedBlog.title)
       assert.strictEqual(blogsWithDeletedTitle.length, 0)
     })
   })
