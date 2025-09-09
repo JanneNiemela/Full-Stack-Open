@@ -13,7 +13,7 @@ describe('when there is one user in the database', () => {
   beforeEach(async () => {
     await User.deleteMany({})
     const passwordHash = await bcrypt.hash('salasana', 10)
-    const user = new User({ username: 'root', passwordHash })
+    const user = new User({ username: 'users_api_test_user', passwordHash })
     await user.save()
   })
 
@@ -21,7 +21,7 @@ describe('when there is one user in the database', () => {
     const usersAtStart = await helper.usersInDb()
 
     const newUser = {
-      username: 'root',
+      username: 'users_api_test_user',
       name: 'Only User',
       password: 'salasana',
     }
