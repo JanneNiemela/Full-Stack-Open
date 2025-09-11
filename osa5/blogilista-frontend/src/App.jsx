@@ -3,12 +3,11 @@ import Blog from './components/Blog'
 import blogService from './services/blogs'
 import loginService from './services/login'
 import Notification from './components/Notification'
+import Togglable from './components/Togglable'
+import BlogForm from './components/BlogForm'
 
 const App = () => {
   const [blogs, setBlogs] = useState([])
-  const [newBlogTitle, setNewBlogTitle] = useState('')
-  const [newBlogAuthor, setNewBlogAuthor] = useState('')
-  const [newBlogUrl, setNewBlogUrl] = useState('')
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [user, setUser] = useState(null)
@@ -67,18 +66,6 @@ const App = () => {
     }, durationMs)
   }
 
-  const handleBlogTitleChange = event => {
-    setNewBlogTitle(event.target.value)
-  }
-
-  const handleBlogAuthorChange = event => {
-    setNewBlogAuthor(event.target.value)
-  }
-
-  const handleBlogUrlChange = event => {
-    setNewBlogUrl(event.target.value)
-  }
-
   const loginForm = () => (
     <form onSubmit={handleLogin}>
       <div>
@@ -107,22 +94,13 @@ const App = () => {
     </form>
   )
 
-  const addBlog = event => {
+  const addBlog = (blog) => {
     event.preventDefault()
-    const blog = {
-      title: newBlogTitle,
-      author: newBlogAuthor,
-      url: newBlogUrl,
-      likes: 0,
-    }
 
     blogService
       .create(blog)
       .then(returnedBlog => {
         setBlogs(blogs.concat(returnedBlog))
-        setNewBlogTitle('')
-        setNewBlogAuthor('')
-        setNewBlogUrl('')
         if (returnedBlog && returnedBlog.title) {
           let msg = `Added a new blog ${returnedBlog.title}`
           if (returnedBlog.author && returnedBlog.author.length > 0) {
@@ -136,27 +114,6 @@ const App = () => {
         displayNotification(`Failed to create a new blog.`, 4000, true)
       })
   }
-
-  const blogForm = () => (
-    <div>
-      <h2>Create a new blog</h2>
-      <form onSubmit={addBlog}>
-        <div>
-          <label>Title:</label>
-          <input value={newBlogTitle} onChange={handleBlogTitleChange} required={true}/>
-        </div>
-        <div>
-          <label>Author:</label>
-          <input value={newBlogAuthor} onChange={handleBlogAuthorChange}/>
-        </div>
-        <div>
-          <label>URL:</label>
-          <input value={newBlogUrl} onChange={handleBlogUrlChange} required={true}/>
-        </div>
-        <button type="submit">save</button>
-      </form>
-    </div>
-  )
 
   const blogList = () => (
     <div>
@@ -180,7 +137,9 @@ const App = () => {
             {user.name} logged in.
             <button onClick={handleLogOut}>Log out</button>
           </div>
-          {blogForm()}
+          <Togglable buttonLabel='Create a new blog'>
+            <BlogForm addBlog={addBlog} />
+          </Togglable>
           <br></br>
           {blogList()}
         </div>
