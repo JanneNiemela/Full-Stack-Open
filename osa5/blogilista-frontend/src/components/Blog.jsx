@@ -1,6 +1,6 @@
 import { useState } from 'react'
 
-const Blog = ({ blog }) => {
+const Blog = ({ blog, handleLike }) => {
   const [showDetails, setShowDetails] = useState(false)
 
   const style = {
@@ -18,7 +18,15 @@ const Blog = ({ blog }) => {
   }
 
   const like = () => {
-    console.log('Like button pressed.')
+    const likedBlog = {
+      id: blog.id,
+      title: blog.title,
+      author: blog.author,
+      url: blog.url,
+      likes: blog.likes + 1,
+      user: blog.user.id
+    }
+    handleLike(likedBlog)
   }
 
   return (

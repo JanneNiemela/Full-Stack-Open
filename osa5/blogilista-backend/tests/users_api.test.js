@@ -1,0 +1,131 @@
+const bcrypt = require('bcrypt')
+const User = require('../models/user')
+const assert = require('node:assert')
+const { test, after, beforeEach, describe } = require('node:test')
+const mongoose = require('mongoose')
+const supertest = require('supertest')
+const app = require('../app')
+const helper = require('./test_helper')
+
+const api = supertest(app)
+
+describe('when there is one user in the database', () => {
+  beforeEach(async () => {
+    await User.deleteMany({})
+    const passwordHash = await bcrypt.hash('salasana', 10)
+    const user = new User({ username: 'users_api_test_user', passwordHash })
+    await user.save()
+  })
+
+  test('creation of a new user fails with proper statuscode if username is already taken', async () => {
+    const usersAtStart = await helper.usersInDb()
+
+    const newUser = {
+      username: 'users_api_test_user',
+      name: 'Only User',
+      password: 'salasana',
+    }
+
+    const result = await api
+      .post('/api/users')
+      .send(newUser)
+      .expect(400)
+      .expect('Content-Type', /application\/json/)
+
+    const usersAtEnd = await helper.usersInDb()
+    assert(result.body.error.includes('expected `username` to be unique'))
+    assert.strictEqual(usersAtEnd.length, usersAtStart.length)
+  })
+
+  test('creation of a new user fails with proper statuscode if username is unassigned or too short', async () => {
+    const usersAtStart = await helper.usersInDb()
+
+    const userWithoutUsername = {
+      name: 'name',
+      password: 'salasana',
+    }
+
+    const resultNoUserName = await api
+      .post('/api/users')
+      .send(userWithoutUsername)
+      .expect(400)
+      .expect('Content-Type', /application\/json/)
+
+    assert(resultNoUserName.body.error.includes('Username is missing.'))
+
+    const userWithTooShortUsername = {
+      username: 'aa',
+      password: 'salasana',
+    }
+
+    const resultTooShortUsername = await api
+      .post('/api/users')
+      .send(userWithTooShortUsername)
+      .expect(400)
+      .expect('Content-Type', /application\/json/)
+
+    assert(resultTooShortUsername.body.error.includes('Username is too short. It must be at least three characters long.'))
+
+    const usersAtEnd = await helper.usersInDb()
+    assert.strictEqual(usersAtEnd.length, usersAtStart.length)
+  })
+
+  test('creation of a new user fails with proper statuscode if password is unassigned or too short', async () => {
+    const usersAtStart = await helper.usersInDb()
+
+    const userWithoutPassword = {
+      username: 'newuserforpwcheck',
+      name: 'name',
+    }
+
+    const resultNoPw = await api
+      .post('/api/users')
+      .send(userWithoutPassword)
+      .expect(400)
+      .expect('Content-Type', /application\/json/)
+
+    assert(resultNoPw.body.error.includes('Password is missing.'))
+
+    const userWithTooShortPassword = {
+      username: 'newuserforpwcheck2',
+      name: 'name',
+      password: 'aa',
+    }
+
+    const resultTooShortPassword = await api
+      .post('/api/users')
+      .send(userWithTooShortPassword)
+      .expect(400)
+      .expect('Content-Type', /application\/json/)
+
+    assert(resultTooShortPassword.body.error.includes('Password is too short. It must be at least three characters long.'))
+
+    const usersAtEnd = await helper.usersInDb()
+    assert.strictEqual(usersAtEnd.length, usersAtStart.length)
+  })
+
+  test('creation succeeds with an unused username', async () => {
+    const usersAtStart = await helper.usersInDb()
+
+    const newUser = {
+      username: 'newuser',
+      name: 'New User',
+      password: 'salasana',
+    }
+
+    await api
+      .post('/api/users')
+      .send(newUser)
+      .expect(201)
+      .expect('Content-Type', /application\/json/)
+
+    const usersAtEnd = await helper.usersInDb()
+    assert.strictEqual(usersAtEnd.length, usersAtStart.length + 1)
+    const usernames = usersAtEnd.map(u => u.username)
+    assert(usernames.includes(newUser.username))
+  })
+})
+
+after(async () => {
+  await mongoose.connection.close()
+})
