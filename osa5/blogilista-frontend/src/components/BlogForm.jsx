@@ -38,7 +38,7 @@ const BlogForm = ({ addBlog }) => {
         <button type="submit">Create</button>
       </form>
     </div>
-    )
+  )
 }
 
 export default BlogForm

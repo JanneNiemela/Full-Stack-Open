@@ -23,7 +23,7 @@ const App = () => {
         setBlogs(returnedBlogs.sort((a, b) => a.likes < b.likes))
       })
       .catch(error => {
-        displayNotification(`Failed to load persons from the server.`, 4000, true)
+        displayNotification('Failed to load persons from the server.', 4000, true)
         console.error(error.message)
       })
   }, [])
@@ -48,13 +48,13 @@ const App = () => {
       setPassword('')
     } catch (error) {
       console.error(`Wrong username or password: ${error.message}`)
-      displayNotification(`Wrong username or password.`, 4000, true)
+      displayNotification('Wrong username or password.', 4000, true)
     }
   }
 
   const handleLogOut = () => {
     window.localStorage.removeItem('loggedBlogListAppUser')
-    blogService.setToken("")
+    blogService.setToken('')
     setUser(null)
     setUsername('')
     setPassword('')
@@ -115,7 +115,7 @@ const App = () => {
       })
       .catch(error => {
         console.error(`Failed to create a new blog: (${error.message})`)
-        displayNotification(`Failed to create a new blog.`, 4000, true)
+        displayNotification('Failed to create a new blog.', 4000, true)
       })
   }
 
@@ -129,7 +129,7 @@ const App = () => {
       })
       .catch(error => {
         console.error(`Failed to like a blog: (${error.message})`)
-        displayNotification(`Failed to like a blog.`, 4000, true)
+        displayNotification('Failed to like a blog.', 4000, true)
       })
   }
 
@@ -138,7 +138,7 @@ const App = () => {
     if (blog.author && blog.author.length > 0) {
       msg += ` by ${blog.author}`
     }
-    msg += `?`
+    msg += '?'
     if (!confirm(msg)) {
       return
     }
@@ -147,11 +147,11 @@ const App = () => {
       .del(id)
       .then(() => {
         setBlogs(blogs.filter(b => b.id !== id))
-        displayNotification(`Blog deleted.`, 4000, false)
+        displayNotification('Blog deleted.', 4000, false)
       })
       .catch(error => {
         console.error(`Failed to delete a blog: (${error.message})`)
-        displayNotification(`Failed to delete a blog.`, 4000, true)
+        displayNotification('Failed to delete a blog.', 4000, true)
       })
   }
 
