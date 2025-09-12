@@ -97,8 +97,6 @@ const App = () => {
   )
 
   const addBlog = (blog) => {
-    event.preventDefault()
-
 	  blogFormRef?.current?.toggleVisibility()
 
     blogService
@@ -120,8 +118,6 @@ const App = () => {
   }
 
   const likeBlog = (blog) => {
-    event.preventDefault()
-
     blogService
       .update(blog.id, blog)
       .then(returnedBlog => {
