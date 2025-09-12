@@ -2,6 +2,8 @@ import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import Blog from './Blog'
 
+let mockLike = null
+
 describe('Blog', () => {
   beforeEach(() => {
     const blog = {
@@ -16,8 +18,9 @@ describe('Blog', () => {
         username: 'Username',
       }
     }
-
-    render(<Blog blog={blog} />)
+    mockLike = vi.fn()
+    expect(mockLike)
+    render(<Blog blog={blog} handleLike={mockLike}/>)
   })
 
   test('renders the title and the author of the blog at start', () => {
@@ -57,5 +60,15 @@ describe('Blog', () => {
     expect(url).not.toBeVisible()
     expect(likes).not.toBeVisible()
     expect(userInfo).not.toBeVisible()
+  })
+
+  test('clicking the like button calls the handler function correctly', async () => {
+    const user = userEvent.setup()
+    const likeButton = screen.getByText('Like', { exact: true })
+
+    await user.click(likeButton)
+    await user.click(likeButton)
+
+    expect(mockLike.mock.calls).toHaveLength(2)
   })
 })
