@@ -19,8 +19,8 @@ const App = () => {
   useEffect(() => {
     blogService
       .getAll()
-      .then(blogs => {
-        setBlogs(blogs)
+      .then(returnedBlogs => {
+        setBlogs(returnedBlogs.sort((a, b) => a.likes < b.likes))
       })
       .catch(error => {
         displayNotification(`Failed to load persons from the server.`, 4000, true)
