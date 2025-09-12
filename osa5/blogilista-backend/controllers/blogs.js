@@ -27,13 +27,9 @@ blogsRouter.post('/', userExtractor, async (request, response) => {
 })
 
 blogsRouter.put('/:id', userExtractor, async (request, response) => {
-  // Error handling of request.user is handled in userExtractor middleware, so the user is always valid here.
-  const user = request.user
   const blog = await Blog.findById(request.params.id)
   if (!blog) {
     return response.status(404).json({ error: `A blog with id ${request.params.id} doesn't exist.` })
-  } else if (!blog.user || blog.user.toString() !== user.id.toString()) {
-    return response.status(403).json({ error: 'Changing the properties of blogs made by other users is not permitted.' })
   }
 
   const newBlog = new Blog({
@@ -41,7 +37,7 @@ blogsRouter.put('/:id', userExtractor, async (request, response) => {
     author: request.body.author || '',
     url: request.body.url,
     likes: request.body.likes || 0,
-    user: user._id
+    user: request.body.user
   })
 
   blog.title = newBlog.title
