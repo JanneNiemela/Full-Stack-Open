@@ -1,6 +1,6 @@
 import { useState } from 'react'
 
-const Blog = ({ blog, handleLike }) => {
+const Blog = ({ blog, handleLike, handleDel, user }) => {
   const [showDetails, setShowDetails] = useState(false)
 
   const style = {
@@ -11,6 +11,7 @@ const Blog = ({ blog, handleLike }) => {
   }
 
   const detailStyle = { display: showDetails ? '' : 'none' }
+  const showRemoveButtonStyle = { display: (blog && blog.user && user && user.username === blog.user.username) ? '' : 'none' }
   const toggleButtonText = (showDetails) ? 'Hide' : 'View'
 
   const toggleDetails = () => {
@@ -29,6 +30,10 @@ const Blog = ({ blog, handleLike }) => {
     handleLike(likedBlog)
   }
 
+  const deleteBlog = () => {
+    handleDel(blog)
+  }
+
   return (
     <div style={style}>
       <div>
@@ -45,6 +50,9 @@ const Blog = ({ blog, handleLike }) => {
           </div>
         )}
         {blog && blog.user && blog.user.name && blog.user.name.length > 0 && (<div>Added by: {blog.user.name}</div>)}
+        <div style={showRemoveButtonStyle}>
+          <button onClick={deleteBlog}>Remove</button>
+        </div>
       </div>
     </div>
   )

@@ -133,10 +133,32 @@ const App = () => {
       })
   }
 
+  const deleteBlog = (blog) => {
+    let msg = `Delete blog ${blog.title}`
+    if (blog.author && blog.author.length > 0) {
+      msg += ` by ${blog.author}`
+    }
+    msg += `?`
+    if (!confirm(msg)) {
+      return
+    }
+    const id = blog.id
+    blogService
+      .del(id)
+      .then(() => {
+        setBlogs(blogs.filter(b => b.id !== id))
+        displayNotification(`Blog deleted.`, 4000, false)
+      })
+      .catch(error => {
+        console.error(`Failed to delete a blog: (${error.message})`)
+        displayNotification(`Failed to delete a blog.`, 4000, true)
+      })
+  }
+
   const blogList = () => (
     <div>
       {blogs.map(blog =>
-        <Blog key={blog.id} blog={blog} handleLike={likeBlog}/>
+        <Blog key={blog.id} blog={blog} handleLike={likeBlog} handleDel={deleteBlog} user={user}/>
       )}
     </div>
   )
