@@ -4,10 +4,19 @@ const { login, addBlog } = require('./test_helper')
 describe('Blog app', () => {
   beforeEach(async ({ page, request }) => {
     await request.post('/api/testing/reset')
+
     await request.post('/api/users', {
       data: {
         name: 'Test User',
         username: 'testuser',
+        password: 'password'
+      }
+    })
+
+    await request.post('/api/users', {
+      data: {
+        name: 'Test User 2',
+        username: 'testuser2',
         password: 'password'
       }
     })
@@ -70,6 +79,19 @@ describe('Blog app', () => {
 
         await expect(page.getByText('Blog deleted.')).toBeVisible()
         await expect(page.getByText('Test blog by Test Author')).not.toBeVisible()
+      })
+
+      test('only the creator of a blog sees the Remove button', async ({ page }) => {
+        await addBlog(page, 'Test blog', 'Test Author', 'www.testblogurl.com')
+        const blogParent = await page.getByText('Test blog by Test Author').locator('..')
+
+        await page.getByRole('button', { name: 'Log out' }).click()
+        await login(page, 'testuser2', 'password')
+        await expect(page.getByText('Test User 2 logged in')).toBeVisible()
+
+        await blogParent.getByRole('button', { name: 'View' }).click()
+        await expect(blogParent.getByRole('button', { name: 'Hide' })).toBeVisible()
+        await expect(blogParent.getByRole('button', { name: 'Remove' })).not.toBeVisible()
       })
     })
   })
