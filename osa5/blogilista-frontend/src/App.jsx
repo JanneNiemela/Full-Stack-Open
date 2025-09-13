@@ -103,13 +103,7 @@ const App = () => {
       .create(blog)
       .then(returnedBlog => {
         setBlogs(blogs.concat(returnedBlog))
-        if (returnedBlog && returnedBlog.title) {
-          let msg = `Added a new blog ${returnedBlog.title}`
-          if (returnedBlog.author && returnedBlog.author.length > 0) {
-            msg += ` by ${returnedBlog.author}`
-          }
-          displayNotification(msg, 4000, false)
-        }
+        displayNotification('Added a new blog.', 4000, false)
       })
       .catch(error => {
         console.error(`Failed to create a new blog: (${error.message})`)
