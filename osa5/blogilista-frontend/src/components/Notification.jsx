@@ -27,7 +27,7 @@ const Notification = ({ message, isError }) => {
 
   return (
     <div style={style}>
-      <p>{message}</p>
+      <p data-testid='notificationText'>{message}</p>
     </div>
   )
 }
