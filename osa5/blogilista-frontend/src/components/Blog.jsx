@@ -35,7 +35,7 @@ const Blog = ({ blog, handleLike, handleDel, user }) => {
   }
 
   return (
-    <div style={style}>
+    <div style={style} data-testid='blog-parent'>
       <div>
         {blog && blog.title && blog.title.length > 0 && (<>{blog.title}</>)}
         {blog && blog.author && blog.author.length > 0 && (<> by {blog.author}</>)}

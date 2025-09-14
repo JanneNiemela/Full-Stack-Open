@@ -20,7 +20,7 @@ const App = () => {
     blogService
       .getAll()
       .then(returnedBlogs => {
-        setBlogs(returnedBlogs.sort((a, b) => a.likes < b.likes))
+        setBlogs([...returnedBlogs].sort((a, b) => b.likes - a.likes))
       })
       .catch(error => {
         displayNotification('Failed to load persons from the server.', 4000, true)

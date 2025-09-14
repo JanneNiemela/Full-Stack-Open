@@ -1,5 +1,6 @@
 const { test, expect, beforeEach, describe } = require('@playwright/test')
 const { login, addBlog } = require('./test_helper')
+const { assert } = require('console')
 
 describe('Blog app', () => {
   beforeEach(async ({ page, request }) => {
@@ -92,6 +93,45 @@ describe('Blog app', () => {
         await blogParent.getByRole('button', { name: 'View' }).click()
         await expect(blogParent.getByRole('button', { name: 'Hide' })).toBeVisible()
         await expect(blogParent.getByRole('button', { name: 'Remove' })).not.toBeVisible()
+      })
+
+      test('blogs are sorted according to their like count', async ({ page }) => {
+        await addBlog(page, 'Test blog 1', 'Test Author', 'www.testblogurl.com')
+        await addBlog(page, 'Test blog 2', 'Test Author', 'www.testblogurl.com')
+        await addBlog(page, 'Test blog 3', 'Test Author', 'www.testblogurl.com')
+
+        const unsortedBlogs = await page.getByTestId('blog-parent').all()
+        await expect(unsortedBlogs[0]).toContainText('Test blog 1 by Test Author')
+        await expect(unsortedBlogs[1]).toContainText('Test blog 2 by Test Author')
+        await expect(unsortedBlogs[2]).toContainText('Test blog 3 by Test Author')
+
+        await unsortedBlogs[0].getByRole('button', { name: 'View' }).click()
+        
+        await unsortedBlogs[1].getByRole('button', { name: 'View' }).click()
+        await unsortedBlogs[1].getByRole('button', { name: 'Like' }).click()
+        await unsortedBlogs[1].getByText('1').waitFor()
+
+        await unsortedBlogs[2].getByRole('button', { name: 'View' }).click()
+        await unsortedBlogs[2].getByRole('button', { name: 'Like' }).click()
+        await unsortedBlogs[2].getByText('1').waitFor()
+        await unsortedBlogs[2].getByRole('button', { name: 'Like' }).click()
+        await unsortedBlogs[2].getByText('2').waitFor()
+
+        // Refresh the page to sort the blogs by their like counts and wait until they are rendered.
+        await page.reload()
+        await page.getByText('Test blog 1 by Test Author').waitFor()
+        await page.getByText('Test blog 2 by Test Author').waitFor()
+        await page.getByText('Test blog 3 by Test Author').waitFor()
+
+        const sortedBlogs = await page.getByTestId('blog-parent').all()
+
+        await expect(sortedBlogs[0]).toContainText('Test blog 3 by Test Author')
+        await expect(sortedBlogs[1]).toContainText('Test blog 2 by Test Author')
+        await expect(sortedBlogs[2]).toContainText('Test blog 1 by Test Author')
+
+        await sortedBlogs[0].getByRole('button', { name: 'View' }).click()
+        await sortedBlogs[1].getByRole('button', { name: 'View' }).click()
+        await sortedBlogs[2].getByRole('button', { name: 'View' }).click()
       })
     })
   })
